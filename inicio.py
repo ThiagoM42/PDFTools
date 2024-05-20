@@ -38,6 +38,15 @@ def extrair_pagina_pdf(arquivo_pdf, numero_pagina_start):
             print('Error')
 
     return questions
+def extrair_pagina_pdf_gabarito(arquivo_pdf, num_page):
+    pdf_reader = PyPDF2.PdfReader(arquivo_pdf)
+    total_page = len(pdf_reader.pages)
+    try:
+        page = pdf_reader.pages[num_page - 1]
+        text = page.extract_text()
+        return text
+    except IndexError:
+        print('Error')
 
 col1, col2 = st.columns([0.7, 0.3])
 
@@ -50,31 +59,38 @@ Escolha um arquivo PDF para extrair uma página:
 """)
 
 arquivo_pdf = st.file_uploader(
-    label='Selecione o arquivo PDF',
+    label='Selecione o arquivo PDF de questões',
     type='pdf',
     accept_multiple_files=False
 )
 numero_pagina_start = st.number_input('Página incial da extração', min_value=1)
-numero_pagina_final = st.number_input('Página final da extração', min_value=1)
-# if arquivo_pdf:
+# numero_pagina_final = st.number_input('Página final da extração', min_value=1)
+# if arquivo_pdf:1
 #     botoes_desativados = False
 # else:
 #     botoes_desativados = True
 
+arquivo_pdf_gabarito = st.file_uploader(
+    label='Selecione o arquivo PDF do gabarito',
+    type='pdf',
+    accept_multiple_files=False
+)
+numero_pagina_extract = st.number_input('Escolha uma página para ser extraido os dados', min_value=1)
+
 if arquivo_pdf:
-    # clicou_processar = st.button(
-    #     'Clique para processar o arquivo PDF...',
-    #     use_container_width=True,
-    #     disabled=botoes_desativados
-    # )
-    # if clicou_processar:
     container = st.container(border=True)
     dados_pdf = extrair_pagina_pdf(arquivo_pdf=arquivo_pdf, numero_pagina_start=numero_pagina_start)
     st.session_state['dados_pdf'] = dados_pdf
     if dados_pdf is None:
         st.warning(f'PDF não possui página de número {numero_pagina_start}!')
         # return
-
     input_area(dados_pdf, container)
 
-
+if arquivo_pdf_gabarito:
+    container = st.container(border=True)
+    dados_pdf_gabarito = extrair_pagina_pdf_gabarito(arquivo_pdf=arquivo_pdf_gabarito, num_page=numero_pagina_extract)
+    st.session_state['gabarito'] = dados_pdf_gabarito
+    if dados_pdf_gabarito is None:
+        st.warning(f'PDF não possui página de número {numero_pagina_extract}!')
+    # print(dados_pdf_gabarito)
+    # input_area(dados_pdf, container)
