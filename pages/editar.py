@@ -24,6 +24,8 @@ def proc(key, dados_pdf):
 def match_question_alternative():
     questoes = []
     num_questao = 0
+    texto = ''
+    figura = ''
     alternatives_arr_map = []
     dados_pdf = st.session_state['dados_pdf']
     padrao = re.compile(r'^\d{1,}?[.)]+[\sa-zA-Zà-úÀ-Ú0-9.(),%“”""''$;/:-]{1,}?\s{1,}?(?=[aA][\)\.])', flags=re.M)
@@ -37,20 +39,30 @@ def match_question_alternative():
                 num_questao = num_questao[0]
             # print(enunciado)
             alternatives = re.findall(r'^\s?[a-zA-Z]+\)+[\sa-zA-Zà-úÀ-Ú0-9.(),%“”""''$;/:-]+\w', question, flags=re.M)
-            # print(alternatives)
+            # print(re.findall(r'texto+\s*\d*', enunciado[0], flags=re.I))
+            if re.findall(r'texto+\s*\d*', enunciado[0], flags=re.I):
+                texto = re.findall(r'texto+\s*\d*', enunciado[0], flags=re.I)
+            elif re.findall(r'parágrafo+\s*\d*', enunciado[0], flags=re.I):
+                texto = re.findall(r'parágrafo+\s*\d*', enunciado[0], flags=re.I)
+            elif re.findall(r'trecho+\s*\d*', enunciado[0], flags=re.I):
+                texto = re.findall(r'trecho+\s*\d*', enunciado[0], flags=re.I)
+            else:
+                texto=""
+            if re.findall(r'figura+\s*\d*', enunciado[0], flags=re.I):
+                figura = re.findall(r'figura+\s*\d*', enunciado[0], flags=re.I)
+            elif re.findall(r'imagem+\s*\d*', enunciado[0], flags=re.I):
+                figura = re.findall(r'imagem+\s*\d*', enunciado[0], flags=re.I)
+            else:
+                figura=""
             if alternatives:
                 alternatives_arr = re.split('\w\)', *alternatives)
                 alternatives_arr.pop(0)
-                alternatives_arr_map = list(map(lambda x: x.strip(), alternatives_arr))
-                print(alternatives_arr_map)
-                # print(
-                #     "*************************************************************************************************************************************")
-
+                alternatives_arr_map = list(map(lambda x: {'alternativa': x.strip(), 'response': False}, alternatives_arr))
             else:
                 print(f'não houve match {i}')
-        obj_question = {'num_questao': num_questao, 'enunciado': enunciado, 'alternatives': alternatives_arr_map}
+        obj_question = {'num_questao': num_questao, 'enunciado': enunciado, 'alternatives': alternatives_arr_map, "texto": texto, "figura": figura}
         questoes.append(obj_question)
-    print(questoes)
+    # print(questoes)
     st.session_state['questoes'] = questoes
     print("*************************************************************************************************************************************")
 
