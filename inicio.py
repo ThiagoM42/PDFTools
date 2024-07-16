@@ -1,9 +1,9 @@
-import tempfile
 import re
-from pathlib import Path
 import PyPDF2
 import streamlit as st
+import os
 
+# streamlit run main.py
 def input_area(dados_pdf, container):
     for i, question in enumerate(dados_pdf):
         # container.text_area(f'Questão {i + 1}', question, 400, on_change=proc, key=i, args=(i, dados_pdf))
@@ -11,6 +11,7 @@ def input_area(dados_pdf, container):
 
 def extrair_pagina_pdf(arquivo_pdf, numero_pagina_start):
     questions = []
+    # nome_file = os.path.basename(arquivo_pdf)
     pdf_reader = PyPDF2.PdfReader(arquivo_pdf)
     total_page = len(pdf_reader.pages)
     pattern = r'\d+\..*?(?=\n\d+\.\s|$)'
@@ -29,11 +30,8 @@ def extrair_pagina_pdf(arquivo_pdf, numero_pagina_start):
             # tem que retornar um array para cada questão
             # return page_questions
             questions.extend(page_questions)
-            # print(questions)
-            # questions
-            # questions = list(filter(lambda el: re.match(r'A\)', el, flags=re.M), questions))
-            # questions = list(filter(lambda el: print(re.match(r'A\)', el, flags=re.M)), questions))
-            questions = list(filter(lambda el: len(re.findall(r'[Aa]\)', el))>0, questions))
+            questions = list(filter(lambda el: len(re.findall(r'[Aa]\)', el)) > 0, questions))
+            # print(page_questions)
         except IndexError:
             print('Error')
 
@@ -79,6 +77,7 @@ numero_pagina_extract = st.number_input('Escolha uma página para ser extraido o
 
 if arquivo_pdf:
     container = st.container(border=True)
+    st.session_state['name_file'] = arquivo_pdf.name
     dados_pdf = extrair_pagina_pdf(arquivo_pdf=arquivo_pdf, numero_pagina_start=numero_pagina_start)
     st.session_state['dados_pdf'] = dados_pdf
     if dados_pdf is None:
