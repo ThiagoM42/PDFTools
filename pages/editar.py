@@ -1,6 +1,7 @@
 import streamlit as st
 import re
 
+html_str=""
 def input_area(dados_pdf):
     html_str = f"""
     <style>
@@ -13,6 +14,7 @@ def input_area(dados_pdf):
 
     st.markdown(html_str, unsafe_allow_html=True)
     st.button('Next step', on_click=match_question_alternative)
+    st.button('Add questão no topo', on_click=add_question, args=(-1, dados_pdf))
     for i, question in enumerate(dados_pdf):
         st.text_area(f'Questão {i + 1}', question, 400, on_change=proc, key=i, args=(i, dados_pdf))
         col1, col2 = st.columns([0.5, 0.5])
@@ -22,9 +24,9 @@ def input_area(dados_pdf):
             st.button(f'Remover Questão {i + 1}', type="primary", on_click=remove_question, args=(i, dados_pdf))
         # st.button(f'Remover Questão {i + 1}', key=i, on_click=remove_question, args=(i, dados_pdf), type="secondary")
     st.button('Next step.', on_click=match_question_alternative)
-
+    st.markdown(html_str, unsafe_allow_html=True)
 def proc(key, dados_pdf):
-    print(st.session_state[key])
+    # print(st.session_state[key])
     dados_pdf[key] = st.session_state[key]
     st.session_state['dados_pdf'] = dados_pdf
     input_area(dados_pdf)
@@ -53,6 +55,8 @@ def match_question_alternative():
             enunciado = padrao.findall(question)
             # print(enunciado)
             if enunciado:
+                
+                
                 num_questao = re.findall(r'\d{1,}', enunciado[0], flags=re.M)
                 if num_questao:
                     num_questao = num_questao[0]
@@ -77,13 +81,15 @@ def match_question_alternative():
                     alternatives_arr.pop(0)
                     alternatives_arr_map = list(map(lambda x: {'alternativa': x.strip(), 'response': False}, alternatives_arr))
                 else:
-                    print(f'não houve match {i}')
+                   st.toast(f'Houve um erro na questão {i+1}', icon="🚨")
         except:
-            st.error(f'Houve um erro na questão {i+1}', icon="🚨")
-        obj_question = {'num_questao': num_questao, 'enunciado': enunciado, 'alternatives': alternatives_arr_map, "texto": texto, "figura": figura, 'name_file': st.session_state['name_file']}
-        questoes.append(obj_question)
+            st.toast(f'Houve um erro na questão {i+1}', icon="🚨")
+                
+        if enunciado:            
+            obj_question = {'num_questao': num_questao, 'enunciado': enunciado, 'alternatives': alternatives_arr_map, "texto": texto, "figura": figura, 'name_file': st.session_state['name_file']}
+            questoes.append(obj_question)
     # print(questoes)
-    st.session_state['questoes'] = questoes
+    st.session_state['questoes'] = questoes    
     # print("*************************************************************************************************************************************")
 
 try:
