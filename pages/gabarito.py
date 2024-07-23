@@ -16,18 +16,23 @@ try:
     if st.session_state['gabarito']:
         if st.button('Associar ao questionário'):
             questoes = st.session_state['questoes']
-            for indice, question in enumerate(questoes):
-                # print(indice)
-                num_question = int(question['num_questao'])
-                gabarito_ = st.session_state['gabarito_pd']
-                alternative = list(filter(lambda x: x['questao'] == num_question, gabarito_))
-                if alternative:
-                    response_gabarito = alternative[0]["resposta"]
-                    index = alternatives.index(response_gabarito)
-                    if index>= 0:
-                        print(index)
-                        question['alternatives'][index]["response"] = True
-            # st.json(first)
+            # print(questoes)
+            try:
+                for indice, question in enumerate(questoes):
+                    # print(indice)
+                    
+                    num_question = int(question['num_questao'])
+                    
+                    gabarito_ = st.session_state['gabarito_pd']               
+                    # print(gabarito_)
+                    alternative = list(filter(lambda x: x['questao'] == num_question, gabarito_))
+                    if alternative:
+                        response_gabarito = alternative[0]["resposta"][0]
+                        index = alternatives.index(response_gabarito)                            
+                        if index>= 0:                        
+                            question['alternatives'][index]["response"] = True                
+            except Exception as e:
+                print(e)
         with col3:
             gabarito = st.session_state['gabarito']
             # text_area(f'Questão {i + 1}', question, 400, disabled=True)
@@ -47,14 +52,15 @@ try:
                 caractere =  re.findall(r'[a-zA-Z]', caractere)
                 if(caractere):
                     dados_gabarito.append({'questao': i+1, 'resposta': caractere}) 
+                    
                     i=i+1               
-            # print(gabarito_copiado)
             df = pd.DataFrame(dados_gabarito)
             st.session_state['gabarito_pd'] = dados_gabarito
+            # print(st.session_state['gabarito_pd'])
             df.set_index("questao", inplace =True)
         if(st.session_state['gabarito_pd']):            
             edited_df = st.data_editor(df, num_rows="dynamic")
-        print(len(dados_gabarito))
+        # print(len(dados_gabarito))
 
             # df = pd.DataFrame(st.session_state['gabarito_pd'])
             # df.set_index("questao", inplace =True)
