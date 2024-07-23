@@ -74,12 +74,14 @@ def match_question_alternative():
                     figura = re.findall(r'figura+\s*\d*', enunciado[0], flags=re.I)
                 elif re.findall(r'imagem+\s*\d*', enunciado[0], flags=re.I):
                     figura = re.findall(r'imagem+\s*\d*', enunciado[0], flags=re.I)
+                elif re.findall(r'abaixo+\s*\d*', enunciado[0], flags=re.I):
+                    figura = re.findall(r'abaixo+\s*\d*', enunciado[0], flags=re.I)                    
                 else:
                     figura=""
                 if alternatives:
                     alternatives_arr = re.split('\w\)', *alternatives)
                     alternatives_arr.pop(0)
-                    alternatives_arr_map = list(map(lambda x: {'alternativa': x.strip(), 'response': False}, alternatives_arr))
+                    alternatives_arr_map = list(map(lambda x: {'summary': x.strip(), 'response': False}, alternatives_arr))
                 else:
                    st.toast(f'Houve um erro na questão {i+1}', icon="🚨")
         except:
