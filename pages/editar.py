@@ -72,6 +72,8 @@ def match_question_alternative():
                     texto=""
                 if re.findall(r'figura+\s*\d*', enunciado[0], flags=re.I):
                     figura = re.findall(r'figura+\s*\d*', enunciado[0], flags=re.I)
+                if re.findall(r'tabela+\s*\d*', enunciado[0], flags=re.I):
+                    figura = re.findall(r'figura+\s*\d*', enunciado[0], flags=re.I)
                 elif re.findall(r'imagem+\s*\d*', enunciado[0], flags=re.I):
                     figura = re.findall(r'imagem+\s*\d*', enunciado[0], flags=re.I)
                 elif re.findall(r'abaixo+\s*\d*', enunciado[0], flags=re.I):
